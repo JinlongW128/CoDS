@@ -106,20 +106,9 @@ conda activate cods
 
 ### Single-GPU training
 
-Train the dynamic segmentation configuration:
-
 ```bash
 CUDA_VISIBLE_DEVICES=0 python opencood/tools/train.py \
-    --hypes_yaml opencood/hypes_yaml/opv2v/detseg/opv2v_cods_dynamic.yaml \
-    --tag cods_dynamic
-```
-
-Train the static segmentation configuration:
-
-```bash
-CUDA_VISIBLE_DEVICES=0 python opencood/tools/train.py \
-    --hypes_yaml opencood/hypes_yaml/opv2v/detseg/opv2v_cods_static.yaml \
-    --tag cods_static
+    --hypes_yaml path/to/yaml \
 ```
 
 Training outputs are written to `opencood/logs/`. Each experiment directory contains the resolved `config.yaml`, TensorBoard events, loss logs, and model checkpoints.
@@ -134,21 +123,7 @@ CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch \
     --master_port=45673 \
     --use_env \
     opencood/tools/train_ddp.py \
-    --hypes_yaml opencood/hypes_yaml/opv2v/detseg/opv2v_cods_dynamic.yaml \
-    --tag cods_dynamic
-```
-
-Add `--half` to enable automatic mixed-precision training:
-
-```bash
-CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch \
-    --nproc_per_node=2 \
-    --master_port=45673 \
-    --use_env \
-    opencood/tools/train_ddp.py \
-    --hypes_yaml opencood/hypes_yaml/opv2v/detseg/opv2v_cods_dynamic.yaml \
-    --tag cods_dynamic_amp \
-    --half
+    --hypes_yaml path/to/yaml \
 ```
 
 ### Resume training
@@ -157,7 +132,7 @@ Use `--model_dir` to resume from the latest `net_epoch*.pth` checkpoint in an ex
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python opencood/tools/train.py \
-    --hypes_yaml opencood/hypes_yaml/opv2v/detseg/opv2v_cods_dynamic.yaml \
+    --hypes_yaml path/to/yaml \
     --model_dir opencood/logs/<experiment_directory>
 ```
 
@@ -171,7 +146,7 @@ Run joint detection and segmentation evaluation with:
 CUDA_VISIBLE_DEVICES=0 python opencood/tools/inference_detseg.py \
     --model_dir opencood/logs/<experiment_directory> \
     --fusion_method intermediate \
-    --eval_epoch 30
+    --eval_epoch xx
 ```
 
 Useful options include:
@@ -191,7 +166,7 @@ Example with visualization:
 CUDA_VISIBLE_DEVICES=0 python opencood/tools/inference_detseg.py \
     --model_dir opencood/logs/<experiment_directory> \
     --fusion_method intermediate \
-    --eval_epoch 30 \
+    --eval_epoch xx \
     --save_vis \
     --save_vis_interval 10
 ```
@@ -201,9 +176,6 @@ Evaluation results are appended to:
 ```text
 <experiment_directory>/result.txt
 ```
-
-Detection is evaluated with AP at IoU thresholds 0.3, 0.5, and 0.7. Segmentation is evaluated with Dynamic, Road, and Lane IoU according to the selected model configuration.
-
 
 ## Citation
 
